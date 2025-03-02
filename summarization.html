@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>summarization skills</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* 自訂樣式 */
+        #chatbox {
+            height: 400px;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+        .user-message {
+            color: green; /* 使用者訊息顏色 */
+        }
+        .bot-message {
+            color: blue; /* 機器人訊息顏色 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-1">
+        <p>總結能力是指將大量信息或內容提煉成簡明扼要的要點或摘要的能力。這種技能對於理解和傳達重要信息非常重要，適用於學術研究、商業報告以及日常溝通中。良好的總結能力幫助人們更快速地掌握核心概念，提升效率。</p>
+        <h6 class="text-center">summarization skills</h6>
+        <div id="chatbox" class="mb-3"></div>
+        <div class="input-group">
+            <input type="text" id="userInput" class="form-control" placeholder="輸入您想表達的主題...">
+            <div class="input-group-append"></div>
+                <button id="sendButton" class="btn btn-primary">Send</button>
+            </div>
+            <br>
+            <!--
+            <h5>使用CO-STAR框架來幫助ChatGPT用一句話清晰地表達一個概念，可以按照以下結構進行設計。這裡我將示範如何構建這樣的提示。</h5>
+            <h5>PROMPT:</h5> 
+        <pre><code>
+1. Context（上下文）提供背景信息，讓模型了解所要表達的概念所處的情境。
+2. Objective（目標）明確希望模型達成的目標，即用一句話表達一個概念。
+3. Style（風格）指定所需的語言風格，比如正式、非正式、簡潔等。
+4. Tone（語氣）設定語氣，例如積極、專業或輕鬆。
+5. Audience（受眾）確定目標受眾，這樣可以使表達更具針對性。
+6. Response（回應格式）要求以簡潔的句子形式回應。
+不要顯示#prompt#。取得 #prompt# 之後，再用 #prompt# 請chatGP以 #prompt# 的內容回答一次 #zh-TW
+        </code> </pre>
+        <h5>Example：</h5>
+        </code>
+            <pre>
+You: 資訊安全的三要素
+請您這樣說:
+資訊安全的三要素是保密性、完整性和可用性。保密性確保資訊僅對授權使用者可見，完整性確保資訊未被未經授權地修改，而可用性則確保授權使用者能隨時獲取資訊。
+                    
+            </pre>-->
+        </div>
+           
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        const messages = []; // 儲存對話上下文
+
+        document.getElementById('sendButton').onclick = function() {
+            const userInput = document.getElementById('userInput').value;
+            messages.push({ role: 'user', content: userInput }); // 儲存使用者訊息
+            document.getElementById('chatbox').innerHTML += `<div class="user-message"><strong>You:</strong> ${userInput}</div>`;
+            document.getElementById('userInput').value = '';
+
+            fetch('summarization.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userInput, context: messages }) // 傳送上下文
+            })
+            .then(response => response.json())
+            .then(data => {
+                const formattedReply = data.reply.split('\n').map(line => `<p>${line}</p>`).join('');
+                messages.push({ role: 'bot', content: formattedReply }); // 儲存機器人回覆
+                document.getElementById('chatbox').innerHTML += `<div class="bot-message"><strong>請您這樣說:</strong> ${formattedReply}</div>`;
+                document.getElementById('chatbox').scrollTop = chatbox.scrollHeight; // 滾動到最底部
+            });
+        };
+    </script>
+</body>
+</html>
